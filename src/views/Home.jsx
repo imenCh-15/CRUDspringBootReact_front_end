@@ -6,9 +6,9 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
 import Paper from "@mui/material/Paper";
-import { Button, IconButton } from "@mui/material";
+import { IconButton } from "@mui/material";
 import { Container } from "@mui/system";
 import { deleteEmployeeAPI, getEmployeesAPI } from "../apis/employee";
 import { styled } from "@mui/material/styles";
@@ -36,7 +36,7 @@ export default function Home() {
               <TableRow>
                 <StyledTableCell>Name</StyledTableCell>
                 <StyledTableCell>Email</StyledTableCell>
-                <StyledTableCell>Address</StyledTableCell>
+                <StyledTableCell>Addresses</StyledTableCell>
                 <StyledTableCell>Edit</StyledTableCell>
                 <StyledTableCell>Delete</StyledTableCell>
               </TableRow>
@@ -53,26 +53,29 @@ export default function Home() {
                   <TableCell component="th" scope="row">
                     {row?.email}
                   </TableCell>
-                  <TableCell>{row?.address}</TableCell>
+                  <TableCell>
+                    {row?.employeeAddresses.map(
+                      ({ id, street, zip_code, city,type }) => (
+                        <li key={id}>{street + "," + city + "," + zip_code}</li>
+                      )
+                    )}
+                  </TableCell>
                   <TableCell>
                     <IconButton
                       href={`/update/${row.id}`}
-                      fullWidth
                       color="success"
                       variant="outlined"
                     >
-                     <EditIcon/>
+                      <EditIcon />
                     </IconButton>
                   </TableCell>
                   <TableCell>
                     <IconButton
                       aria-label="delete"
                       onClick={() => handleDelete(row.id)}
-                      fullWidth
                       color="error"
                       variant="outlined"
                     >
-                   
                       <DeleteIcon />
                     </IconButton>
                   </TableCell>

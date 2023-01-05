@@ -9,15 +9,20 @@ export default function AddEmployee() {
   const [employee, setEmployee] = useState({
     name: "",
     email: "",
-    address: "",
   });
   const handleChange = (prop) => (event) => {
     console.log(event.target);
     setEmployee({ ...employee, [prop]: event.target.value });
   };
   const handleSubmit = () => {
-    addEmployeeAPI(employee).then((res) => console.log(res));
-    navigate("/");
+    addEmployeeAPI(employee).then((res) =>{ console.log(res)
+      if(res?.data?.id)
+      setTimeout(()=>{  
+        // navigate("/");7
+        navigate(`/update/${res.data.id}`)
+ 
+     },1000)});
+   
   };
   return (
     <>
@@ -41,7 +46,7 @@ export default function AddEmployee() {
 
         <TextField
           style={{ margin: "10px" }}
-          name="name"
+          label="Name"
           onChange={handleChange("name")}
           placeholder="Enter Name"
           value={employee.name}
@@ -49,20 +54,13 @@ export default function AddEmployee() {
         />
         <TextField
           style={{ margin: "10px" }}
-          name="email"
+          label="Email"
           onChange={handleChange("email")}
           placeholder="Enter Email"
           value={employee.email}
           fullWidth
         />
-        <TextField
-          style={{ margin: "10px" }}
-          name="address"
-          onChange={handleChange("address")}
-          placeholder="Enter Address"
-          value={employee.address}
-          fullWidth
-        />
+   
         <Button
           style={{ margin: "10px" }}
           onClick={handleSubmit}
