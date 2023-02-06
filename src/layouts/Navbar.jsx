@@ -51,7 +51,7 @@ function Navbar() {
               aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
-              onClick={handleOpenNavMenu}
+              onClick={()=>handleOpenNavMenu}
               color="inherit"
             >
               <MenuIcon />
@@ -75,7 +75,7 @@ function Navbar() {
               }}
             >
               {pages.map(({page}) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                <MenuItem key={page} onClick={()=>handleCloseNavMenu}>
                   <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
@@ -105,7 +105,7 @@ function Navbar() {
               <Button
                 key={page}
                 href={path}
-                onClick={handleCloseNavMenu}
+                onClick={()=>handleCloseNavMenu}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
                 {page}

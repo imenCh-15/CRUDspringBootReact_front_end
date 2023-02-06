@@ -12,10 +12,13 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.2.1",
+    "eslint-plugin-sonarjs": "^0.18.0",
     "react": "^18.2.0",
+    "react-confirm-alert": "^3.0.6",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.6.0",
     "react-scripts": "5.0.1",
+    "react-test-renderer": "^18.2.0",
     "react-toastify": "^9.1.1",
     "styled-components": "^5.3.6",
     "web-vitals": "^2.1.4"
@@ -23,9 +26,19 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "react-scripts test --watchAll=false --coverage --testResultsProcessor jest-sonar-reporter",
+    "test2": "react-scripts test --coverage --transformIgnorePatterns \"node_modules/(?!axios)/\" --testResultsProcessor jest-sonar-reporter",
+    "eject": "react-scripts eject",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix",
+    "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
   },
+  "jest": {
+    "collectCoverageFrom": [
+        "src/**/*.{js,jsx,ts,tsx}",
+        "!src/index.js","!.eslintrc.js "
+      ]
+    },
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -43,5 +56,16 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "enzyme": "^3.11.0",
+    "eslint": "^8.32.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.32.1",
+    "jest": "^27.5.1",
+    "jest-sonar-reporter": "^2.0.0",
+    "prettier": "^2.8.3",
+    "sonarqube-scanner": "^3.0.0"
   }
 }

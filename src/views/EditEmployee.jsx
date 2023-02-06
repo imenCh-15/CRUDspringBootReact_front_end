@@ -13,9 +13,8 @@ import {
   Typography,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import EditOffIcon from '@mui/icons-material/EditOff';
+import EditOffIcon from "@mui/icons-material/EditOff";
 import DeleteIcon from "@mui/icons-material/Delete";
-
 
 import { toast } from "react-toastify";
 
@@ -27,10 +26,12 @@ import {
   updateEmployeeAddressesAPI,
 } from "../apis/address";
 import { editEmployeeAPI, getEmployeeAPI } from "../apis/employee";
+import ConfirmModal from "../components/ConfirmModal";
 
-export default function AddEmployee() {
+export default function EditEmployee() {
   let navigate = useNavigate();
-
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [addressId, setAddressId] = useState(false);
   const [employee, setEmployee] = useState({
     name: "",
     email: "",
@@ -44,27 +45,28 @@ export default function AddEmployee() {
     city: "",
     street: "",
     zip_code: "",
-    type:""
+    type: "",
   });
   const [showAdditionalForm, setShowAdditionalForm] = useState(false);
   const [primaryAddress, setPrimaryAddress] = useState({
     city: "",
     street: "",
     zip_code: "",
-    type:""
+    type: "",
   });
   const [oldPrimaryAddress, setOldPrimaryAddres] = useState({});
   const [showForm, setShowForm] = useState(false);
 
   const { id } = useParams();
-
   useEffect(() => {
     loadEmployee();
   }, []);
+
   useEffect(() => {
     setOldPrimaryAddres(
       addresses.filter((address) => address.type === "primary")[0]
     );
+
     setPrimaryAddress(
       addresses.filter((address) => address.type === "primary")[0]
     );
@@ -72,14 +74,23 @@ export default function AddEmployee() {
 
   const loadEmployee = () => {
     getEmployeeAPI(id).then((res) => {
-      setEmployee(res.data);
-      setOldEmployee(res.data);
-      setAddresses(res.data.employeeAddresses);
+      console.log(res);
+      setEmployee(res?.data);
+      setOldEmployee(res?.data);
+      setAddresses(res?.data?.employeeAddresses);
     });
   };
-  const submitPrimaryAddress = (event) => {
-    event.preventDefault();
 
+  const handleDelete = (id) => {
+    setAddressId(id);
+    setOpenDeleteModal(true);
+  };
+
+  const handleClose = () => {
+    setOpenDeleteModal(false);
+  };
+
+  const submitPrimaryAddress = () => {
     const newAddress = { ...primaryAddress, type: "primary" };
     addEmployeeAddressesAPI(id, newAddress).then((res) => {
       if (res?.data?.errorMessage) toast.warning(res.data.errorMessage);
@@ -89,9 +100,8 @@ export default function AddEmployee() {
       setShowForm(false);
     });
   };
-  const updatePrimaryAddress = (event) => {
-    event.preventDefault();
 
+  const updatePrimaryAddress = () => {
     const newAddress = { ...primaryAddress, type: "primary" };
     updateEmployeeAddressesAPI(id, oldPrimaryAddress.id, newAddress).then(
       (res) => {
@@ -103,69 +113,87 @@ export default function AddEmployee() {
       }
     );
   };
-  const submitAddionalAddress = (event) => {
-    event.preventDefault();
-    console.log("submitAddionalAddress");
 
-  
-      addEmployeeAddressesAPI(id, {...additionalAddress,type:"addional"}).then((res) => {
-        setAdditionalAddress({ city: "",
-        street: "",
-        zip_code: "",
-        type:""})
-      if (res?.data?.errorMessage)
-      return toast.warning(res.data.errorMessage);
-      setAdditionalAddress(res.data);
+  const submitadditionalAddress = () => {
+    addEmployeeAddressesAPI(id, {
+      ...additionalAddress,
+      type: "additional",
+    }).then((res) => {
+      setAdditionalAddress({ city: "", street: "", zip_code: "", type: "" });
+      if (res?.data?.errorMessage) return toast.warning(res.data.errorMessage);
       loadEmployee();
       setShowAdditionalForm(false);
-    }
-    )
-   
-  };
-  const updateAddionalAddess = (event) => {
-    console.log("updateAddionalAddess");
-    event.preventDefault();
-    updateEmployeeAddressesAPI(id, additionalAddress.id, additionalAddress).then(
-      (res) => {
-        if (res?.data?.errorMessage)
-        return  toast.warning(res.data.errorMessage);
-        setAdditionalAddress(res.data);
-        loadEmployee();
-        setShowAdditionalForm(false);
-      }
-    );
+    });
   };
 
-  const handleChange = (prop) => (event) => {
-    setEmployee({ ...employee, [prop]: event.target.value });
+  const updateAddionalAddress = () => {
+    updateEmployeeAddressesAPI(
+      id,
+      additionalAddress.id,
+      additionalAddress
+    ).then((res) => {
+      if (res?.data?.errorMessage) return toast.warning(res.data.errorMessage);
+      setAdditionalAddress({ city: "", street: "", zip_code: "", type: "" });
+      loadEmployee();
+      setShowAdditionalForm(false);
+    });
   };
-  const handleChangeAddress = (prop) => (event) => {
-    setPrimaryAddress({ ...primaryAddress, [prop]: event.target.value });
+
+  const handleChange = (event) => {
+    setEmployee({ ...employee, [event.target.name]: event.target.value });
   };
-  const handleChangeAddionalAddress = (prop) => (event) => {
-   setAdditionalAddress({ ...additionalAddress, [prop]: event.target.value });
+
+  const handleChangeAddress = (event) => {
+    setPrimaryAddress({
+      ...primaryAddress,
+      [event.target.name]: event.target.value,
+    });
   };
+
+  const handleChangeadditionalAddress = (event) => {
+    setAdditionalAddress({
+      ...additionalAddress,
+      [event.target.name]: event.target.value,
+    });
+  };
+
   const handleSubmit = () => {
-    editEmployeeAPI(id, { name: employee.name, email: employee.email }).then(
-      (res) => console.log(res.data)
-    );
-    setTimeout(() => {
-      navigate("/");
-    }, 1000);
+    editEmployeeAPI(id, { name: employee.name, email: employee.email })
+      .then((res) => {
+        console.log(res.data);
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
+      })
+      .catch((err) => {
+        console.error(err.response.data);
+        toast.error(err.response.data);
+      });
   };
+
   const toggleUpdate = (obj) => {
     setShowAdditionalForm(true);
     setAdditionalAddress(obj);
   };
-  const deleteAddress=(id)=>{
-    deleteAddressAPI(id).then((res) => {
-      console.log(res.data);
-      loadEmployee();
-    });
 
-  }
+  const deleteAddress = () => {
+    deleteAddressAPI(addressId).then((res) => {
+      console.log(res.data);
+      setAdditionalAddress({ city: "", street: "", zip_code: "", type: "" });
+      loadEmployee();
+      setTimeout(() => toast.success(`Address deleted successfully`), 1000);
+    });
+    setOpenDeleteModal(false);
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
+      <ConfirmModal
+        open={openDeleteModal}
+        text={"Confirm to delete address"}
+        onClose={handleClose}
+        handleSubmit={deleteAddress}
+      />
       <Typography
         variant="h6"
         noWrap
@@ -209,21 +237,24 @@ export default function AddEmployee() {
             <TextField
               style={{ margin: "10px" }}
               name="name"
-              onChange={handleChange("name")}
+              label="Name"
+              onChange={(event) => handleChange(event)}
               placeholder="Enter Name"
               value={employee.name}
             />
             <TextField
               style={{ margin: "10px" }}
               name="email"
-              onChange={handleChange("email")}
+              label="Email"
+              onChange={(event) => handleChange(event)}
               placeholder="Enter Email"
               value={employee.email}
             />
 
             <Button
               style={{ margin: "10px" }}
-              onClick={handleSubmit}
+              onClick={() => handleSubmit()}
+              data-testid="employee-form"
               variant="contained"
               disabled={
                 oldEmployee.name === employee.name &&
@@ -269,21 +300,27 @@ export default function AddEmployee() {
               <>
                 <TextField
                   style={{ margin: "10px" }}
-                  onChange={handleChangeAddress("street")}
+                  onChange={(event) => handleChangeAddress(event)}
+                  name="street"
+                  label="Primary Address street"
                   placeholder="Enter street"
                   value={primaryAddress?.street}
                   variant="standard"
                 />
                 <TextField
                   style={{ margin: "10px" }}
-                  onChange={handleChangeAddress("city")}
+                  onChange={(event) => handleChangeAddress(event)}
+                  name="city"
+                  label="Primary Address city"
                   placeholder="Enter City"
                   value={primaryAddress?.city}
                   variant="standard"
                 />
                 <TextField
                   style={{ margin: "10px" }}
-                  onChange={handleChangeAddress("zip_code")}
+                  onChange={(event) => handleChangeAddress(event)}
+                  name="zip_code"
+                  label="Primary Address zip code"
                   placeholder="Enter Zip Code"
                   value={primaryAddress?.zip_code}
                   variant="standard"
@@ -294,11 +331,12 @@ export default function AddEmployee() {
                     alignItems: "center",
                     justifyContent: "center",
                   }}
-                  onClick={
+                  data-testid="primaryAddress-form"
+                  onClick={() => {
                     oldPrimaryAddress?.city
-                      ? updatePrimaryAddress
-                      : submitPrimaryAddress
-                  }
+                      ? updatePrimaryAddress()
+                      : submitPrimaryAddress();
+                  }}
                   disabled={
                     !primaryAddress?.city &&
                     !primaryAddress?.street &&
@@ -316,6 +354,7 @@ export default function AddEmployee() {
                   alignItems: "center",
                   justifyContent: "center",
                 }}
+                data-testid="show_primary_Form"
                 onClick={() => setShowForm(true)}
               >
                 {oldPrimaryAddress?.city ? "update" : "add"} primary address
@@ -360,7 +399,6 @@ export default function AddEmployee() {
             )}
 
             <List dense component="div" role="list">
-         
               {addresses
                 .filter((address) => address.type !== "primary")
                 .map((obj) => (
@@ -368,25 +406,36 @@ export default function AddEmployee() {
                     <ListItem
                       role="listitem"
                       secondaryAction={
-                       <Stack direction="row" spacing={2}><IconButton
-                          edge="end"
-                          aria-label="edit"
-                          onClick={() => toggleUpdate(obj)}
-                          //isabled={obj.id===additionalAddress?.id}
-                        >
-                         {/* {!showAdditionalForm&& <EditIcon />} */}
-                         {showAdditionalForm&&obj.id===additionalAddress.id&&obj!==additionalAddress?<EditOffIcon/>:<EditIcon />}
-                        </IconButton>
-                         <IconButton
-                          color="error"
-                         edge="end"
-                         aria-label="delete"
-                         onClick={()=>deleteAddress(obj?.id)}
-                         //isabled={obj.id===additionalAddress?.id}
-                       >
-                      <DeleteIcon />
-                       </IconButton>
-                       </Stack> 
+                        <Stack direction="row" spacing={2}>
+                          <IconButton
+                            edge="end"
+                            aria-label="edit"
+                            onClick={() => toggleUpdate(obj)}
+                            data-testid={`toggleUpdate${obj.id}`}
+                            //disabled={obj.id===additionalAddress?.id}
+                          >
+                            {/* {!showAdditionalForm&& <EditIcon />} */}
+                            {showAdditionalForm &&
+                            obj.id === additionalAddress.id &&
+                            obj !== additionalAddress ? (
+                              <EditOffIcon />
+                            ) : (
+                              <EditIcon />
+                            )}
+                          </IconButton>
+                          <IconButton
+                            color="error"
+                            edge="end"
+                            aria-label="delete"
+                            data-testid={`toggleDelete${obj.id}`}
+                            onClick={() =>
+                              obj?.id ? handleDelete(obj?.id) : null
+                            }
+                            //disabled={obj.id===additionalAddress?.id}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Stack>
                       }
                     >
                       <ListItemText>
@@ -400,21 +449,29 @@ export default function AddEmployee() {
               <>
                 <TextField
                   style={{ margin: "10px" }}
-                    onChange={handleChangeAddionalAddress("street")}
+                  onChange={(event) => {
+                    handleChangeadditionalAddress(event);
+                  }}
+                  name="street"
+                  label="Additional Address street"
                   placeholder="Enter street"
                   value={additionalAddress?.street}
                   variant="standard"
                 />
                 <TextField
                   style={{ margin: "10px" }}
-                  onChange={handleChangeAddionalAddress("city")}
+                  onChange={(event) => handleChangeadditionalAddress(event)}
+                  name="city"
+                  label="Additional Address city"
                   placeholder="Enter City"
                   value={additionalAddress?.city}
                   variant="standard"
                 />
                 <TextField
                   style={{ margin: "10px" }}
-                  onChange={handleChangeAddionalAddress("zip_code")}
+                  onChange={(event) => handleChangeadditionalAddress(event)}
+                  name="zip_code"
+                  label="Additional Address zip code"
                   placeholder="Enter Zip Code"
                   value={additionalAddress?.zip_code}
                   variant="standard"
@@ -425,10 +482,11 @@ export default function AddEmployee() {
                     alignItems: "center",
                     justifyContent: "center",
                   }}
-                  onClick={
+                  data-testid="additionalAddress-form"
+                  onClick={() =>
                     additionalAddress?.id
-                      ? updateAddionalAddess
-                      : submitAddionalAddress
+                      ? updateAddionalAddress()
+                      : submitadditionalAddress()
                   }
                   disabled={
                     !additionalAddress?.city &&
@@ -440,20 +498,19 @@ export default function AddEmployee() {
                 </Button>
               </>
             )}
-             {!showAdditionalForm&&
+            {!showAdditionalForm && (
               <Button
                 style={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
+                data-testid="show_additional_Form"
                 onClick={() => setShowAdditionalForm(true)}
               >
-               add additional address
+                add additional address
               </Button>
-            }
-
-           
+            )}
           </Paper>
         </Grid>
       </Grid>

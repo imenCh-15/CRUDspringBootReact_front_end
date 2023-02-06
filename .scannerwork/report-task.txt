@@ -1,0 +1,6 @@
+projectKey=employeesManagment
+serverUrl=http://localhost:9000
+serverVersion=9.8.0.63668
+dashboardUrl=http://localhost:9000/dashboard?id=employeesManagment
+ceTaskId=AYYmdVofLpqfEVh4tmhD
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AYYmdVofLpqfEVh4tmhD

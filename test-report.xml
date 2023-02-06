@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="C:\Users\imenc\client\src\tests\Navbar.test.js">
+    <testCase name="Navbar Should render without crashing" duration="126"/>
+  </file>
+  <file path="C:\Users\imenc\client\src\tests\Home.test.js">
+    <testCase name="Component should render employees with nos addresses" duration="106"/>
+    <testCase name="Component should render employees" duration="14"/>
+    <testCase name="Component it redirects after click" duration="29"/>
+    <testCase name="Component should delete employee" duration="43"/>
+  </file>
+  <file path="C:\Users\imenc\client\src\tests\AddEmployee.test.js">
+    <testCase name="AddEmployee rendres input and button" duration="146"/>
+    <testCase name="AddEmployee should send data when submitting the form when getting the correct data" duration="56"/>
+    <testCase name="AddEmployee should not send data when submitting the form when getting the wrong data" duration="41"/>
+  </file>
+  <file path="C:\Users\imenc\client\src\tests\EditEmployee.test.js">
+    <testCase name="AddEmployee rendres input and button" duration="230"/>
+    <testCase name="AddEmployee should render employee info" duration="69"/>
+    <testCase name="AddEmployee should update employee data " duration="41"/>
+    <testCase name="AddEmployee should add employee primary address" duration="284"/>
+    <testCase name="AddEmployee should update employee primary address" duration="109"/>
+    <testCase name="AddEmployee should update employee additional address" duration="75"/>
+    <testCase name="AddEmployee should delete employee additional address" duration="61"/>
+    <testCase name="AddEmployee should add employee additional address " duration="65"/>
+    <testCase name="AddEmployee should not update employee data when submitting the form when getting the correct data" duration="27"/>
+    <testCase name="AddEmployee should render employee with no addresses" duration="28"/>
+  </file>
+</testExecutions>
